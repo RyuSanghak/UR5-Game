@@ -2,6 +2,9 @@
 
 #include "LSPlayer.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
 
 // Sets default values
 ALSPlayer::ALSPlayer()
@@ -25,6 +28,9 @@ ALSPlayer::ALSPlayer()
 
 	topDownCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("topDownCamComp"));
 	topDownCamComp->SetupAttachment(springArmComp);
+	topDownCamComp->bUsePawnControlRotation = false;
+
+	bUseControllerRotationYaw = true;
 
 
 }
@@ -33,6 +39,14 @@ ALSPlayer::ALSPlayer()
 void ALSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	auto pc = Cast<APlayerController>(Controller);
+	if (pc) {
+		auto subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+		if (subsystem) {
+			subsystem->AddMappingContext(imc_PlayerController, 0);
+		}
+	}
 	
 }
 
@@ -41,6 +55,15 @@ void ALSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// update player moved per frame
+	FVector CurrentPos = GetActorLocation();
+	FVector Displacement = direction * playerSpeed * DeltaTime; // Displacement = Velocity * Time
+	FVector MovedPos = CurrentPos + Displacement;
+	SetActorLocation(MovedPos);
+	direction.X = 0;
+	direction.Y = 0;
+	direction.Z = 0;
+
 }
 
 // Called to bind functionality to input
@@ -48,5 +71,22 @@ void ALSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	auto PlayerInput = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	if (PlayerInput) {
+		PlayerInput->BindAction(ia_PlayerController, ETriggerEvent::Triggered, this, &ALSPlayer::Move);
+		PlayerInput->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ALSPlayer::inputJump);
+	}
+
+}
+
+void ALSPlayer::Move(const struct FInputActionValue& inputValue) {
+	FVector2D value = inputValue.Get<FVector2D>();
+
+	direction.X = value.X; // W,S value (move Forward and Backward)
+	direction.Y = value.Y; // A, D value (move left and right)
+}
+
+void ALSPlayer::inputJump(const struct FInputActionValue& inputValue) {
+	Jump();
 }
 

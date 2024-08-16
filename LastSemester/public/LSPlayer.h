@@ -31,11 +31,27 @@ public:
 
 
 public:
+	// Setup Player TopDown Camera
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	USpringArmComponent* springArmComp;
 	
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	UCameraComponent* topDownCamComp;
 
+	//Setup Player Move control
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputMappingContext* imc_PlayerController;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_PlayerController; // move
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_Jump;			// jump
+
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float playerSpeed = 600;
+
+	FVector direction;
+
+	void Move(const struct FInputActionValue& inputValue);
+	void inputJump(const struct FInputActionValue& inputValue);
 
 };
