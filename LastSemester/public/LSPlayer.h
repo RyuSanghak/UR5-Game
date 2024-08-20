@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+
 #include "LSPlayer.generated.h"
 
 
@@ -39,7 +40,7 @@ public:
 	UCameraComponent* topDownCamComp;
 
 	//Setup Player Move control
-	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputMappingContext* imc_PlayerController;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* ia_PlayerController; // move
@@ -52,6 +53,18 @@ public:
 	FVector direction;
 
 	void Move(const struct FInputActionValue& inputValue);
+	void PlayerMove();
 	void inputJump(const struct FInputActionValue& inputValue);
+
+	// Setup player Gun Mesh
+	UPROPERTY(VisibleAnywhere, Category=GunMesh)
+	class USkeletalMeshComponent* gunMeshComp;
+
+	UPROPERTY(EditAnywhere, Category = BulletMaker)
+	TSubclassOf<class ABullet> bulletMaker;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* ia_Fire;
+	void inputFire(const struct FInputActionValue& inputValue);
 
 };

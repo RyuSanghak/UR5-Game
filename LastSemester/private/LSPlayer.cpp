@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Bullet.h"
 
 // Sets default values
 ALSPlayer::ALSPlayer()
@@ -32,6 +33,17 @@ ALSPlayer::ALSPlayer()
 
 	bUseControllerRotationYaw = true;
 
+	JumpMaxCount = 2;
+
+	// GunMesh Component
+	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("gunMeshComp"));
+	gunMeshComp->SetupAttachment(GetMesh());
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	if (TempGunMesh.Succeeded()) {
+		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+	}
+
 
 }
 
@@ -56,13 +68,7 @@ void ALSPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// update player moved per frame
-	FVector CurrentPos = GetActorLocation();
-	FVector Displacement = direction * playerSpeed * DeltaTime; // Displacement = Velocity * Time
-	FVector MovedPos = CurrentPos + Displacement;
-	SetActorLocation(MovedPos);
-	direction.X = 0;
-	direction.Y = 0;
-	direction.Z = 0;
+	PlayerMove();
 
 }
 
@@ -75,6 +81,7 @@ void ALSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (PlayerInput) {
 		PlayerInput->BindAction(ia_PlayerController, ETriggerEvent::Triggered, this, &ALSPlayer::Move);
 		PlayerInput->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ALSPlayer::inputJump);
+		PlayerInput->BindAction(ia_Fire, ETriggerEvent::Triggered, this, &ALSPlayer::inputFire);
 	}
 
 }
@@ -86,7 +93,26 @@ void ALSPlayer::Move(const struct FInputActionValue& inputValue) {
 	direction.Y = value.Y; // A, D value (move left and right)
 }
 
+void ALSPlayer::PlayerMove() {
+	/*
+	FVector CurrentPos = GetActorLocation();
+	FVector Displacement = direction * playerSpeed * DeltaTime; // Displacement = Velocity * Time
+	FVector MovedPos = CurrentPos + Displacement;
+	SetActorLocation(MovedPos);
+	*/
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction.X = 0;
+	direction.Y = 0;
+	direction.Z = 0;
+}
+
 void ALSPlayer::inputJump(const struct FInputActionValue& inputValue) {
 	Jump();
+}
+
+void ALSPlayer::inputFire(const struct FInputActionValue& inputValue) {
+	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+	GetWorld()->SpawnActor<ABullet>(bulletMaker, firePosition);
 }
 
