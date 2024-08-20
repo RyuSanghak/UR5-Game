@@ -1,0 +1,34 @@
+
+* 8/14/2024
+// Setup the Character and Camera. 
+// Camera follows the Main Player Character and it has a Top-Down shape. 
+
+
+* 8/15/2024
+// Implementing character moves by controller. 
+// W,S,A,D, and Spacebar used to move and jump character.
+// Added IA_PlayerController, IA_Jump, IMC_PlayerController
+// The C++ code implemented in LSPlayer.h and LSPlayer.cpp
+
+
+*8/18/2024
+// Add Bullet Component.
+// Bullet has collision component, bodyMesh Comp, and Projectile movement Component which is provided by Unreal Engine.
+// BodyMesh of Bullet is set to a basic Sphere shape for now. 
+
+
+* 8/19/2024
+// Add Weapon Component.
+// Declare the Weapon Component in "Player. " C++ source.
+// Mesh of the Weapon is using basic GunMesh from Unreal Engine 5 for now. (GunMesh will be changed after getting new Mesh.)
+
+// Add a inputAction to fire the Bullet from the Weapon. The input Key is "Left Mouse Button"
+// The bullet is generated it in front of the Weapon and "SpawnActor" function  is used to realize in the game. 
+// Each Bullet is destroyed in 2 sec. 
+
+	"Issue" 
+	// The Bullet is generated too much when click the left mouse button. 
+	(I guess it occurs because the bullet is generated in every frame when the left mouse button is pushed.)
+	(Maybe, the bullet creator needs to be changed to recognize when a button is pressed and released as one event.)
+
+.
