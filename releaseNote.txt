@@ -31,4 +31,15 @@
 	(I guess it occurs because the bullet is generated in every frame when the left mouse button is pushed.)
 	(Maybe, the bullet creator needs to be changed to recognize when a button is pressed and released as one event.)
 
-.
+
+* 8/20/2024
+// Add lookAtMouse() function to make the character look at the mouse cursor. 
+/* 
+if (pc->DeprojectMousePositionToWorld(mouseLocation, mouseDirection)) {
+	FVector characterLocation = GetActorLocation();
+	FVector LookAtTarget = mouseLocation + (mouseDirection * 1000.0f);
+
+	FRotator LookAtRotation = FRotationMatrix::MakeFromX(LookAtTarget - characterLocation).Rotator();
+*/ 
+
+// I think it should be better to add a indicator symbol at the forward of the character to know Intuitively where the character looking at.

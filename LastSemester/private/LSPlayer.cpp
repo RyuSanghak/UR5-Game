@@ -23,7 +23,7 @@ ALSPlayer::ALSPlayer()
 	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	springArmComp->SetupAttachment(RootComponent);
 	springArmComp->SetUsingAbsoluteRotation(true);		// Don't want to rotate when character does.
-	springArmComp->SetRelativeLocation(FVector(0, 0, 300));
+	springArmComp->SetRelativeLocation(FVector(-200, 0, 300));
 	springArmComp->SetRelativeRotation(FRotator(0.0f, -50.0f, 0.0f));
 	springArmComp->TargetArmLength = 700;
 
@@ -54,6 +54,9 @@ void ALSPlayer::BeginPlay()
 
 	auto pc = Cast<APlayerController>(Controller);
 	if (pc) {
+
+		pc->bShowMouseCursor = true; // show up mouse cursor
+
 		auto subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
 		if (subsystem) {
 			subsystem->AddMappingContext(imc_PlayerController, 0);
@@ -69,6 +72,7 @@ void ALSPlayer::Tick(float DeltaTime)
 
 	// update player moved per frame
 	PlayerMove();
+	lookAtMouse();
 
 }
 
@@ -116,3 +120,28 @@ void ALSPlayer::inputFire(const struct FInputActionValue& inputValue) {
 	GetWorld()->SpawnActor<ABullet>(bulletMaker, firePosition);
 }
 
+void ALSPlayer::lookAtMouse() {
+
+	auto pc = Cast<APlayerController>(Controller);
+	if (pc) {
+
+		FHitResult Hit;
+
+		if (pc->DeprojectMousePositionToWorld(mouseLocation, mouseDirection)) {
+			FVector characterLocation = GetActorLocation();
+			FVector LookAtTarget = mouseLocation + (mouseDirection * 1000.0f);
+
+			FRotator LookAtRotation = FRotationMatrix::MakeFromX(LookAtTarget - characterLocation).Rotator();
+
+			//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Blue, LookAtRotation.ToString());
+			// 
+			// 캐릭터가 오직 Yaw 축을 따라 회전하게 설정
+			LookAtRotation.Pitch = 0.0f;
+			LookAtRotation.Roll = 0.0f;
+			LookAtRotation.Yaw += -90.0f;
+
+			// 캐릭터의 회전을 설정
+			GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), LookAtRotation);
+		}
+	}
+}

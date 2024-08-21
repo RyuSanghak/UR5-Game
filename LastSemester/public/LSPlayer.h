@@ -56,6 +56,13 @@ public:
 	void PlayerMove();
 	void inputJump(const struct FInputActionValue& inputValue);
 
+	// Player looks in mouse direction.
+	APlayerController* PlayerController;
+	FVector mouseLocation;
+	FVector mouseDirection;
+	
+	void lookAtMouse();
+
 	// Setup player Gun Mesh
 	UPROPERTY(VisibleAnywhere, Category=GunMesh)
 	class USkeletalMeshComponent* gunMeshComp;
