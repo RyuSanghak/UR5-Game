@@ -72,6 +72,7 @@ void ALSPlayer::Tick(float DeltaTime)
 
 	// update player moved per frame
 	PlayerMove();
+	// player to look in the direction of the mouse
 	lookAtMouse();
 
 }
@@ -134,13 +135,13 @@ void ALSPlayer::lookAtMouse() {
 			FRotator LookAtRotation = FRotationMatrix::MakeFromX(LookAtTarget - characterLocation).Rotator();
 
 			//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Blue, LookAtRotation.ToString());
-			// 
-			// 캐릭터가 오직 Yaw 축을 따라 회전하게 설정
+			 
+			// only change the Yaw value
 			LookAtRotation.Pitch = 0.0f;
 			LookAtRotation.Roll = 0.0f;
 			LookAtRotation.Yaw += -90.0f;
 
-			// 캐릭터의 회전을 설정
+			// only change the Rotation value of player mesh component.
 			GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), LookAtRotation);
 		}
 	}
