@@ -46,9 +46,13 @@ ALSPlayer::ALSPlayer()
 
 	// indicator Mesh Component
 	directionIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("indicatorMeshComp"));
-	directionIndicator->SetupAttachment(RootComponent);
-	directionIndicator->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-	directionIndicator->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempIndicatorMesh(TEXT("/Script/Engine.Blueprint'/Game/Blueprints/indicator.indicator'"));
+	if (TempIndicatorMesh.Succeeded()) {
+		directionIndicator->SetupAttachment(RootComponent);
+		directionIndicator->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+		directionIndicator->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	}
+	
 
 }
 
@@ -158,7 +162,7 @@ void ALSPlayer::updateDirectionIndicator() {
 
 	FRotator CharacterRotation = GetMesh()->GetRelativeRotation();
 	FVector CharacterLocation = GetMesh()->GetRelativeLocation();
-	FRotator newRotation = FRotator(CharacterRotation.Pitch, CharacterRotation.Yaw + 90.0f, CharacterRotation.Roll);
+	FRotator newRotation = FRotator(CharacterRotation.Pitch + -90.0f, CharacterRotation.Yaw + 90.0f, CharacterRotation.Roll);
 	directionIndicator->SetRelativeRotation(newRotation);
 
 }

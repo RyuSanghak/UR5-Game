@@ -57,7 +57,8 @@ if (pc->DeprojectMousePositionToWorld(mouseLocation, mouseDirection)) {
 
 
 
-
+* 8/23/2024
+// Replace the direction indicator static mesh component. 
 
 
 
