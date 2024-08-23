@@ -13,7 +13,7 @@ ALSPlayer::ALSPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Quinn.SKM_Quinn'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Quinn.SKM_Quinn'"));
 	if (TempMesh.Succeeded()) {
 
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
@@ -44,6 +44,11 @@ ALSPlayer::ALSPlayer()
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
 	}
 
+	// indicator Mesh Component
+	directionIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("indicatorMeshComp"));
+	directionIndicator->SetupAttachment(RootComponent);
+	directionIndicator->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	directionIndicator->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 
 }
 
@@ -55,7 +60,7 @@ void ALSPlayer::BeginPlay()
 	auto pc = Cast<APlayerController>(Controller);
 	if (pc) {
 
-		pc->bShowMouseCursor = true; // show up mouse cursor
+		pc->bShowMouseCursor = false; // show up mouse cursor
 
 		auto subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
 		if (subsystem) {
@@ -74,6 +79,8 @@ void ALSPlayer::Tick(float DeltaTime)
 	PlayerMove();
 	// player to look in the direction of the mouse
 	lookAtMouse();
+	// update directionIndicator's position to setup in front of character.
+	updateDirectionIndicator();
 
 }
 
@@ -145,4 +152,13 @@ void ALSPlayer::lookAtMouse() {
 			GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), LookAtRotation);
 		}
 	}
+}
+
+void ALSPlayer::updateDirectionIndicator() {
+
+	FRotator CharacterRotation = GetMesh()->GetRelativeRotation();
+	FVector CharacterLocation = GetMesh()->GetRelativeLocation();
+	FRotator newRotation = FRotator(CharacterRotation.Pitch, CharacterRotation.Yaw + 90.0f, CharacterRotation.Roll);
+	directionIndicator->SetRelativeRotation(newRotation);
+
 }

@@ -43,3 +43,29 @@ if (pc->DeprojectMousePositionToWorld(mouseLocation, mouseDirection)) {
 */ 
 
 // I think it should be better to add a indicator symbol at the forward of the character to know Intuitively where the character looking at.
+
+
+* 8/22/2024
+
+// Add character direction indicator to user easily know where the character look at.
+// updateDirectionIndicator() function is called every frame and update the indicator position.
+// " direction indicator needs a new mesh. " Currently, using basic mesh component.
+
+	"Issue Fix" 
+	// The Issue which The Bullet is generated too much when click the left mouse button is fixed. 
+	// Changed the IA_Fire's trigger to Pressed so that when the user click the mouse left button, it is processed with single click.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

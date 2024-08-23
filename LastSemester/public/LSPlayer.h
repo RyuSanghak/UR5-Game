@@ -74,4 +74,10 @@ public:
 	class UInputAction* ia_Fire;
 	void inputFire(const struct FInputActionValue& inputValue);
 
+	// Character Direction Indicator
+	UPROPERTY(VisibleAnywhere, Category= "Indicator")
+	class UStaticMeshComponent* directionIndicator;
+	void updateDirectionIndicator();
+
+
 };
